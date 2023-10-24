@@ -42,7 +42,7 @@ const Home = () => {
             <div className="row">
                 <div className="col-4">
                     <div className="category">
-                        <h2>Filter</h2>
+                        <h2>Filter by brand</h2>
                         {brand.map((category,index) => {
                             return (
                                 <div className="form-check" key={index} onClick={()=> handleFilter(category.id)}>
@@ -62,7 +62,7 @@ const Home = () => {
                     <Link to='/add' className="btn btn-primary ms-5">Add Product</Link>
 
                     <div className="container">
-            <table className="table">
+            <table className="table table-light table-striped">
                 <thead>
                     <tr>
                         <th scope="col">ID</th>
