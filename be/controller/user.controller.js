@@ -6,12 +6,12 @@ const UserController = {
         
         try {
             if( await  User.findOne({email:email})){
-                return res.status(500).json({
+                return res.status(200).json({
                     message: "Email is exist",
                 });
             }
             else if (await User.findOne({username:username})){
-                return res.status(500).json({
+                return res.status(200).json({
                     message: "Username is exist",
                 });
             }

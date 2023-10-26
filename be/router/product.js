@@ -5,7 +5,8 @@ const router  = express.Router();
 
 router.post('/',Product.createProduct);
 router.get('/',Product.getAllProduct);
-router.get('/:id/comments',CommentController.createComment);
+router.post('/:id/comments',CommentController.createComment);
+router.get('/:id',Product.getProductById)
 
 
 module.exports = router

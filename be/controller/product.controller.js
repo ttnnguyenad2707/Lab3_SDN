@@ -19,7 +19,7 @@ const Product = {
             stock,
             brand,
             thumbnail,
-            image: images, // Nhúng dữ liệu hình ảnh vào trường image
+            image: images, 
           });
           return res.status(200).json({
             message: "Product created successfully",
@@ -38,6 +38,18 @@ const Product = {
             return res.status(500).json(error)
         })
     },
+
+    getProductById: async (req,res) => {
+        const {id} = req.params
+        Products.findById(id).then(data => {
+            return res.status(200).json({
+                message: "Get product successfully",
+                data: data
+            })
+        }).catch(error => {
+            return res.status(500).json(error)
+        })
+    }
     
 
 

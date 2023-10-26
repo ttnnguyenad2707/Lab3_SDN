@@ -16,12 +16,12 @@ const cartController = {
                 }).then(async (cartNew) => {
                     const productFind = await Products.findById(product._id);
 
-                    cartNew.product.push(productFind._doc);
+                    await cartNew.product.push({ ...productFind._doc, quantity: product.quantity });
 
                     cartNew.totalProduct += 1;
                     cartNew.totalQuantity += product.quantity;
-                    cartNew.totalPrice += productFind._doc.price;
-                    cartNew.discountTotal += productFind._doc.discountPercent;
+                    cartNew.totalPrice += productFind._doc.price * (1 - productFind._doc.discountPercent / 100) * product.quantity;
+                    cartNew.discountTotal += productFind._doc.price * (productFind._doc.discountPercent / 100) * product.quantity;
                     await cartNew.save();
                     return res.status(200).json({
                         message: "Product added to cart successfully",
@@ -33,19 +33,30 @@ const cartController = {
 
                 })
             }
-            const productFind = await Products.findById(product._id);
+            else {
 
-            cart.product.push(productFind._doc);
 
-            cart.totalProduct += 1;
-            cart.totalQuantity += product.quantity;
-            cart.totalPrice += productFind._doc.price;
-            cart.discountTotal += productFind._doc.discountPercent;
-            await cart.save();
-            return res.status(200).json({
-                message: "Product added to cart successfully",
-                data: cart
-            })
+                const productFind = await Products.findById(product._id);
+                const existingProduct = cart.product.find(item => item._id.toString() === productFind._id.toString());
+                if (existingProduct) {
+                    // Sản phẩm đã tồn tại trong giỏ hàng, chỉ cộng thêm số lượng
+                    existingProduct.quantity += product.quantity;
+                    cart.totalQuantity += product.quantity;
+                }
+                else {
+                    // Sản phẩm chưa tồn tại trong giỏ hàng, thêm sản phẩm mới
+                    cart.product.push({ ...productFind._doc, quantity: product.quantity });
+                    cart.totalProduct += 1;
+                    cart.totalQuantity += product.quantity;
+                }
+                cart.totalPrice += productFind._doc.price * (1 - productFind._doc.discountPercent / 100) * product.quantity;
+                cart.discountTotal += productFind._doc.price * (productFind._doc.discountPercent / 100) * product.quantity;
+                await cart.save();
+                return res.status(200).json({
+                    message: "Product added to cart successfully",
+                    data: cart
+                })
+            }
         } catch (error) {
             return res.status(500).json({ message: "error" })
         }
@@ -57,10 +68,10 @@ const cartController = {
         Cart.findOne({ user: userId }).then(data => {
             return res.status(200).json({
                 message: "Get all product in cart",
-                data: data.product
+                data: data
             })
         }).catch(error => {
-            return res.status(500).json({message: error})
+            return res.status(500).json({ message: error })
         })
 
     }
